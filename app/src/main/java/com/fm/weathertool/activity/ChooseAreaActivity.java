@@ -140,7 +140,7 @@ public class ChooseAreaActivity extends Activity{
             titleText.setText(selectedCity.getCityName());
             currentLevel = LEVEL_COUNTY;
         } else {
-            queryFromServer(selectedProvince.getProvinceCode()+selectedCity.getCityCode(), "county");
+            queryFromServer(selectedCity.getCityCode(), "county");
         }
     }
     /**
@@ -167,10 +167,10 @@ public class ChooseAreaActivity extends Activity{
                             response);
                 } else if ("city".equals(type)) {
                     result = Utility.handleCitiesResponse(weatherDB,
-                            response, selectedProvince.getId());
+                            response, selectedProvince.getId(),selectedProvince.getProvinceCode());
                 } else if ("county".equals(type)) {
                     result = Utility.handleCountiesResponse(weatherDB,
-                            response, selectedCity.getId());
+                            response, selectedCity.getId(),selectedCity.getCityCode());
                 }
                 if (result) {
 // 通过runOnUiThread()方法回到主线程处理逻辑

@@ -36,14 +36,14 @@ public class Utility {
     /**
      *解析和处理服务器返回的市级信息
      */
-    public synchronized static boolean handleCitiesResponse(WeatherDB db,String response,int provinceId){
+    public synchronized static boolean handleCitiesResponse(WeatherDB db,String response,int provinceId,String provinceCode){
         if (!TextUtils.isEmpty(response)){
             String [] allCity = response.split(",");
             if (allCity!=null&&allCity.length>0){
                 for (String c:allCity){
                     String[] array = c.split(":");
                     City city = new City();
-                    city.setCityCode(array[0].replace("\"","").replace("{",""));
+                    city.setCityCode(provinceCode+array[0].replace("\"","").replace("{",""));
                     city.setCityName(array[1].replace("\"","").replace("}",""));
                     city.setProvinceId(provinceId);
                     //解析回传数据存储City表
@@ -56,14 +56,14 @@ public class Utility {
     }    /**
      *解析和处理服务器返回的县级信息
      */
-    public synchronized static boolean handleCountiesResponse(WeatherDB db,String response,int cityId){
+    public synchronized static boolean handleCountiesResponse(WeatherDB db,String response,int cityId,String cityCode){
         if (!TextUtils.isEmpty(response)){
             String [] allCounty = response.split(",");
             if (allCounty!=null&&allCounty.length>0){
                 for (String c:allCounty){
                     String[] array = c.split(":");
                     County county = new County();
-                    county.setCountyCode(array[0].replace("\"","").replace("{",""));
+                    county.setCountyCode(cityCode+array[0].replace("\"","").replace("{",""));
                     county.setCountyName(array[1].replace("\"","").replace("}",""));
                     county.setCityId(cityId);
                     //解析回传数据存储County表
