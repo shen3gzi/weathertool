@@ -1,7 +1,7 @@
 package com.fm.weathertool.model;
 
 /**
- * Created by FM on 2016/9/12.
+ * Created by FM.
  */
 public class County {
     private int id;
