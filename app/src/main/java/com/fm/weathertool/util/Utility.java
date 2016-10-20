@@ -10,6 +10,7 @@ import com.fm.weathertool.model.County;
 import com.fm.weathertool.model.Province;
 import com.fm.weathertool.model.WeatherDB;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -99,13 +100,23 @@ public class Utility {
     public static void handleWeatherResponse(Context context, String response){
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONObject weatherInfo = jsonObject.getJSONObject("weatherinfo");
-            String cityName = weatherInfo.getString("city");
-            String weatherCode = weatherInfo.getString("cityid");
-            String temp1 = weatherInfo.getString("temp1");
-            String temp2 = weatherInfo.getString("temp2");
-            String weatherDesp = weatherInfo.getString("weather");
-            String publishTime = weatherInfo.getString("ptime");
+            JSONArray HeWeatherData = jsonObject.getJSONArray("HeWeather data service 3.0");
+            JSONObject Data = HeWeatherData.getJSONObject(0);
+            JSONObject basic = Data.getJSONObject("basic");
+            JSONObject update = basic.getJSONObject("update");
+            JSONObject now = Data.getJSONObject("now");
+            JSONObject cond = now.getJSONObject("cond");
+            JSONArray dailyForecast = Data.getJSONArray("daily_forecast");
+            JSONObject today = dailyForecast.getJSONObject(0);
+            JSONObject todayTmp = today.getJSONObject("tmp");
+
+
+            String cityName = basic.getString("city");
+            String weatherCode = basic.getString("id");
+            String temp1 = todayTmp.getString("min");
+            String temp2 = todayTmp.getString("max");
+            String weatherDesp = cond.getString("txt");
+            String publishTime = update.getString("loc");
             saveWeatherInfo(context, cityName, weatherCode, temp1, temp2,
                     weatherDesp, publishTime);
         } catch (JSONException e) {
@@ -125,8 +136,8 @@ public class Utility {
         editor.putBoolean("city_selected", true);
         editor.putString("city_name", cityName);
         editor.putString("weather_code", weatherCode);
-        editor.putString("temp1", temp1);
-        editor.putString("temp2", temp2);
+        editor.putString("temp1", temp1+"℃");
+        editor.putString("temp2", temp2+"℃");
         editor.putString("weather_desp", weatherDesp);
         editor.putString("publish_time", publishTime);
         editor.putString("current_date", sdf.format(new Date()));
