@@ -8,12 +8,12 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fm.weathertool.R;
+import com.fm.weathertool.service.AutoUpdateService;
 import com.fm.weathertool.util.HttpCallbackListener;
 import com.fm.weathertool.util.HttpUtil;
 import com.fm.weathertool.util.Utility;
@@ -100,7 +100,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
         queryFromServer(address);
     }
     /**
-     * 根据传入的地址去向服务器查询天气代号或者天气信息。
+     * 根据传入的地址去向服务器查询天气信息
      */
     private void queryFromServer(final String address) {
 
@@ -145,6 +145,8 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
         currentDateText.setText(prefs.getString("current_date", ""));
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
 
