@@ -67,19 +67,19 @@ public class ChooseAreaActivity extends Activity{
     private int currentLevel;
 
     /**
-     *判断是否从WeatherActivity跳转过来的布尔量
+     *判断是否从MainActivity跳转过来的布尔量
      */
-    private boolean isFromWeatherActivity;
+    private boolean isFromMainActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isFromWeatherActivity = getIntent().getBooleanExtra("from_weatherActivity",false);
+        isFromMainActivity = getIntent().getBooleanExtra("from_MainActivity",false);
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(this);
-        //  已经选择了城市且不是从WeatherActivity 跳转过来，才会直接跳转到WeatherActivity
+        //  已经选择了城市且不是从MainActivity 跳转过来，才会直接跳转到MainActivity
         if(sharedPreferences.getBoolean("city_selected",false)
-                && !isFromWeatherActivity){
-            Intent intent = new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+                && !isFromMainActivity){
+            Intent intent = new Intent(ChooseAreaActivity.this,MainActivity.class);
             startActivity(intent);
             finish();
             return;
@@ -104,7 +104,7 @@ public class ChooseAreaActivity extends Activity{
                 }else if (currentLevel == LEVEL_COUNTY){
                     String countyCode = countyList.get(position).getCountyCode();
                     Intent intent = new Intent(ChooseAreaActivity.this,
-                            WeatherActivity.class);
+                            MainActivity.class);
                     intent.putExtra("county_code", countyCode);
                     startActivity(intent);
                     finish();
@@ -261,8 +261,8 @@ public class ChooseAreaActivity extends Activity{
         } else if (currentLevel == LEVEL_CITY) {
             queryProvinces();
         } else {
-            if (isFromWeatherActivity){
-                Intent intent = new Intent(this, WeatherActivity.class);
+            if (isFromMainActivity){
+                Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
             }
             finish();

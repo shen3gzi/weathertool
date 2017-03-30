@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">WeatherTool</string>
+    <string name="table1_nextdayString">明天</string>
+    <string name="table1_todayString">今天</string>
+    <string name="table2_title">出行助手</string>
+    <string name="cwtxt">洗车指数</string>
+    <string name="drsgtxt">穿衣指数</string>
+    <string name="flutxt">感冒指数</string>
+    <string name="sporttxt">运动指数</string>
+    <string name="travtxt">旅游指数</string>
+    <string name="uvtxt">紫外线指数</string>
 </resources>

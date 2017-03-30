@@ -96,7 +96,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
      * 查询县级代号所对应的天气代号。
      */
     private void queryWeatherCode(String countyCode) {
-        String address = "https://api.heweather.com/x3/weather?cityid="+countyCode+"&key="+Key;
+        String address = "https://api.heweather.com/v5/weather?city="+countyCode+"&key="+Key;
         queryFromServer(address);
     }
     /**
@@ -137,12 +137,12 @@ public class WeatherActivity extends Activity implements View.OnClickListener{
     private void showWeather() {
         SharedPreferences prefs = PreferenceManager.
                 getDefaultSharedPreferences(this);
-        cityNameText.setText( prefs.getString("city_name", ""));
+        cityNameText.setText( prefs.getString("cityname", ""));
         temp1Text.setText(prefs.getString("temp1", ""));
         temp2Text.setText(prefs.getString("temp2", ""));
         weatherDespText.setText(prefs.getString("weather_desp", ""));
-        publishText.setText(prefs.getString("publish_time", "") + "发布");
-        currentDateText.setText(prefs.getString("current_date", ""));
+        publishText.setText(prefs.getString("publishtime", "") + "发布");
+        currentDateText.setText(prefs.getString("currentdate", ""));
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
         Intent intent = new Intent(this, AutoUpdateService.class);
