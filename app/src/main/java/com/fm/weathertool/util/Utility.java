@@ -228,6 +228,7 @@ public class Utility {
         editor.commit();
     }
 
+    //根据天气代码匹配天气状态图片
     public static int handlePic(String code){
         int piccode = R.drawable.pic999;
         switch (code){
@@ -285,6 +286,14 @@ public class Utility {
         default:break;
         }
         return piccode;
+    }
+
+    /**
+     * 匹配掉错误信息
+     */
+    public static String replaceCity(String city) {
+        city = city.replaceAll("(?:省|市|自治区|特别行政区|地区|盟)", "");
+        return city;
     }
 
 }

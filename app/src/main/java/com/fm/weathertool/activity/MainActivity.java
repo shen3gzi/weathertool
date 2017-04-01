@@ -1,13 +1,18 @@
 package com.fm.weathertool.activity;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -27,8 +32,11 @@ import com.fm.weathertool.util.Utility;
 
 import java.util.ArrayList;
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener{
+public class MainActivity extends FragmentActivity implements View.OnClickListener,FragmentThree.Click{
+    //天气API开发者Key
     public static final String Key = "e6e6d3429669495980a1142ffe5379d1";
+    //标识是否退出
+    private static boolean isExit = false;
     private TextView topCityTv;
     private ImageButton topAllCityBtu;
     private ImageButton topRefreshBtu;
@@ -40,21 +48,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private FragmentOne fragmentOne ;
     private FragmentTwo fragmentTwo;
     private FragmentThree fragmentThree;
-    public LocationClient mLocationClient = null; //初始化LocationClient类
-    public MyLocationListener myListener = new MyLocationListener();
+    private LocationClient mLocationClient = null; //初始化LocationClient类
+    private MyLocationListener myListener = new MyLocationListener();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mainlayout);
-        topCityTv = (TextView) findViewById(R.id.cityNameText);
-        mLocationClient = new LocationClient(getApplicationContext());
-        mLocationClient.registerLocationListener(myListener); //注册监听函数
-        setLocationOption();
-        mLocationClient.start();
 
-         fragmentOne = new FragmentOne();
-         fragmentTwo = new FragmentTwo();
-         fragmentThree = new FragmentThree();
+        SharedPreferences prfs = PreferenceManager.getDefaultSharedPreferences(this);
+        fragmentOne = new FragmentOne();
+        fragmentTwo = new FragmentTwo();
+        fragmentThree = new FragmentThree();
         initView();
         initEvent();
 
@@ -65,16 +69,23 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             refreshAnim();
             // 有县级代号时就去查询天气
             queryWeatherCode(countyCode);
+        } else if (prfs.getBoolean("loc_selected",false)) {
+            //没有县级代号有定位时
+            location();
+
         } else {
-            // 没有县级代号时就直接显示本地天气
-            showWeather();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // 没有县级代号没有定位时就直接显示本地天气
+                    showWeather();
+                }
+            });
         }
-
-
-
-
     }
 
+
+    //初始化控件
     private void initView(){
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         topCityTv = (TextView) findViewById(R.id.cityNameText);
@@ -99,7 +110,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
             }
 
-            @Override
+            //实现底部按钮点击效果
             public void onPageSelected(int position) {
                 switch (position){
                     case 0:
@@ -133,6 +144,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     }
 
+    //初始化点击事件
     private void initEvent(){
         bottom1.setOnClickListener(this);
         bottom2.setOnClickListener(this);
@@ -140,7 +152,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         topAllCityBtu.setOnClickListener(this);
         topRefreshBtu.setOnClickListener(this);
     }
-
+    
+    //点击事件处理
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.bottomImgOne:
@@ -169,36 +182,39 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.refreshBtn:
                 //设置加载动画
-                Animation circle_anim = AnimationUtils.loadAnimation(this,R.anim.anim_round_rotate);
-                LinearInterpolator interpolator = new LinearInterpolator();  //设置匀速旋转，在xml文件中设置会出现卡顿
-                circle_anim.setInterpolator(interpolator);
-
-                if (circle_anim!=null){
-                    topRefreshBtu.startAnimation(circle_anim);
+                refreshAnim();
+                SharedPreferences prfs = PreferenceManager.getDefaultSharedPreferences(this);
+                if (prfs.getBoolean("loc_selected",false)){
+                    location();
                 }
-                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-                String weatherCode = pref.getString("weathercode","");
-                if (!TextUtils.isEmpty(weatherCode)) {
-                    queryWeatherCode(weatherCode);
-                    Toast.makeText(this,"刷新成功",Toast.LENGTH_SHORT).show();
-                }
+                else
+                    {
+                String weatherCode = prfs.getString("weathercode","");
+                        if (!TextUtils.isEmpty(weatherCode)) {
+                            queryWeatherCode(weatherCode);
+                            Toast.makeText(this, "刷新成功", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 break;
            default:
                break;
         }
     }
 
-    /**
-     * 查询县级代号所对应的天气代号。
-     */
+
+    //查询县级代号所对应的天气代号。
     private void queryWeatherCode(String countyCode) {
         String address = "https://api.heweather.com/v5/weather?city="+countyCode+"&key="+Key;
         queryFromServer(address);
     }
 
-    /**
-     * 根据传入的地址去向服务器查询天气信息
-     */
+    // 查询城市名称查询所对应的天气代号。
+    private void queryWeatherCode_cityName(String cityName) {
+        String address = "https://api.heweather.com/v5/weather?city="+cityName+"&key="+Key;
+        queryFromServer(address);
+    }
+
+    //根据传入的地址去向服务器查询天气信息
     private void queryFromServer(final String address) {
 
         HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
@@ -226,23 +242,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
         });
     }
-    /*
-        将数据信息返回至界面并显示出来
-     */
+    
+    //将数据信息返回至界面并显示出来
     private void showWeather() {
-        SharedPreferences prefs = PreferenceManager.
-                getDefaultSharedPreferences(this);
-        topCityTv.setText(prefs.getString("cityname", ""));
+        SharedPreferences prfs = PreferenceManager.getDefaultSharedPreferences(this);
+        topCityTv.setText(prfs.getString("cityname", ""));
         topRefreshBtu.clearAnimation();
-        fragmentOne.refreshView(prefs);
-        fragmentTwo.refreshView(prefs);
+        fragmentOne.refreshView(prfs);
+        fragmentTwo.refreshView(prfs);
         topAllCityBtu.setVisibility(View.VISIBLE);
         mViewPager.setVisibility(View.VISIBLE);
         topCityTv.setVisibility(View.VISIBLE);
     }
-    /*
-        刷新动画
-     */
+    
+    //刷新动画
     private void refreshAnim(){
         Animation circle_anim = AnimationUtils.loadAnimation(this,R.anim.anim_round_rotate);
         LinearInterpolator interpolator = new LinearInterpolator();  //设置匀速旋转，在xml文件中设置会出现卡顿
@@ -258,64 +271,114 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
 
+    //实现定位功能
+    public void location(){
 
-
-
+        mLocationClient = new LocationClient(getApplicationContext(), setLocationOption());
+        mLocationClient.registerLocationListener(myListener); //注册监听函数
+        mLocationClient.start();
+    }
 
     //自定义定位监听器
-
-    public class MyLocationListener implements BDLocationListener {
+    private class MyLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
-            //将获取的City赋值给txt
-            /**
-             *1.国家:location.getCountry()
-             * 2.城市:location.getCity()
-             * 3.区域(例：天河区)：location.getDistrict()
-             * 4.地点(例：风信路)：location.getStreet()
-             * 5.详细地址：location.getAddrStr()
-             */
-            topCityTv.setText(location.getAddrStr());
-            Toast.makeText(MainActivity.this,"网络定位成功"+
-                    location.getAddrStr(),Toast.LENGTH_LONG).show();
-        }
-
-
-        public void onReceivePoi(BDLocation arg0) {
+            Toast.makeText(MainActivity.this,location.getCity()+"定位成功"
+                    ,Toast.LENGTH_LONG).show();
+            queryWeatherCode("CN101280101");
         }
     }
 
+    //设置定位相关参数
+    private LocationClientOption setLocationOption() {
+        LocationClientOption option = new LocationClientOption();
+        option.setOpenGps(true);//打开gps
+        option.setCoorType("bd09ll");
+        option.setAddrType("all");
+        option.setIsNeedAddress(true);
+        option.setPriority(LocationClientOption.NetWorkFirst); // 设置网络优先
+        option.setPriority(LocationClientOption.GpsFirst); // 设置网络优先
+        option.disableCache(true);//禁止启用缓存定位
+        return option;
+    }
+
+
+
+
+    //实现设置界面接口通知方法
+    public void notifclick(boolean flag) {
+        SharedPreferences prfs = PreferenceManager.getDefaultSharedPreferences(this);
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        int notifyID = 1;
+        if(flag) {
+            // 设置通知的ID，以实现更新
+            NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
+                    .setContentTitle(prfs.getString("cityname", ""))
+                    .setContentText(prfs.getString("nowweathertext", "") + " 当前温度:" + prfs.getString("nowtmp", ""))
+                    .setSmallIcon(R.drawable.logo)
+                    .setOngoing(true);
+            mNotifyMgr.notify(notifyID, mNotifyBuilder.build());
+        }
+        else {
+            mNotifyMgr.cancel(notifyID);
+        }
+
+    }
+    //实现设置界面接口定位方法
+    public void locationclic(boolean flag) {
+        if (flag)
+            location();
+    }
+
+    //实现快速点击两下返回键退出App，否则只提示信息
+    Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            isExit = false;
+        }
+    };
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void exit() {
+        if (!isExit) {
+            isExit = true;
+            Toast.makeText(getApplicationContext(), "再按一次退出程序",
+                    Toast.LENGTH_SHORT).show();
+            // 利用handler延迟发送更改状态信息
+            mHandler.sendEmptyMessageDelayed(0, 2000);
+        } else {
+            finish();
+            System.exit(0);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //执行onDestroy()方法，停止定位
-    @Override
     public void onDestroy() {
+        if (mLocationClient!=null){
         mLocationClient.stop();
+        }
         super.onDestroy();
     }
 
-    //设置相关参数
-    private void setLocationOption() {
-        LocationClientOption option = new LocationClientOption();
-//        option.setOpenGps(true);//打开gps
-//        option.setCoorType("bd09ll");
-//        option.setAddrType("all");
-//        option.setIsNeedAddress(true);
-//        option.setPriority(LocationClientOption.NetWorkFirst); // 设置网络优先
-//        option.setPriority(LocationClientOption.GpsFirst); // 设置网络优先
-//        option.disableCache(true);//禁止启用缓存定位
-        option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors
-        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
-        int span=1000;
-        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
-        option.setOpenGps(true);//可选，默认false,设置是否使用gps
-        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
-        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
-        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
-        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
-        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
-        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
-        mLocationClient.setLocOption(option);
-    }
 
 }

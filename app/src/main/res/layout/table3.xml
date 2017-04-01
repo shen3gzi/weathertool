@@ -12,66 +12,149 @@
             android:layout_marginLeft="5dp"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@mipmap/ic_launcher"/>
+            android:background="@drawable/repairicon"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="设置"
-            android:textColor="@color/black"
+            android:textColor="@color/gray"
             android:textSize="25sp"            
             android:gravity="center"
             android:layout_centerInParent="true"
             />
     </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_marginTop="0dp"
+        android:layout_height="0.5dp"
+        android:background="#aa000000" />
     <RelativeLayout
+        android:id="@+id/table3_themeLayout"
         android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="60dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="    主 题"
-            android:textColor="@color/black"
-            android:textSize="30sp"/>
+            android:textColor="@color/gray"
+            android:textSize="25sp"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/arrow"/>
+
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_marginTop="0.5dp"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#aa000000" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="    定 位"
+            android:textColor="@color/gray"
+            android:textSize="25sp"/>
+        <Switch
+            android:id="@+id/table3_locSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:checked="false"
+            android:switchMinWidth="30dp"
+            android:textOn=""
+            android:textOff=""
+            android:thumb="@drawable/thumb"
+            android:track="@drawable/track"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_marginTop="0.5dp"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#aa000000" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="天气通知"
+            android:textColor="@color/gray"
+            android:textSize="25sp"/>
+        <Switch
+            android:id="@+id/table3_notifSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:switchMinWidth="30dp"
+            android:textOn=""
+            android:textOff=""
+            android:thumb="@drawable/thumb"
+            android:track="@drawable/track"/>
+
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_marginTop="0.5dp"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#aa000000" />
+    <RelativeLayout
+        android:id="@+id/table3_infoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text=" 定点播报"
+            android:textColor="@color/gray"
+            android:textSize="25sp"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/arrow"/>
 
     </RelativeLayout>
 
-
-
+    <View
+        android:layout_width="fill_parent"
+        android:layout_marginTop="0.5dp"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#aa000000" />
+    
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp">
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/locaSwitchBtn"
-        android:text="    定 位"
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="20dp"/>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="70dp">
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/infoSwitchBtn"
-        android:text="    通 知  "
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="20dp"/>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="60dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text=" 更新设置  "
-            android:textColor="@color/black"
-            android:textSize="30sp"/>
+            android:textColor="@color/gray"
+            android:textSize="25sp"/>
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -84,19 +167,23 @@
                 android:layout_height="wrap_content"
                 android:text="自动"
                 android:textSize="22sp"
-                android:id="@+id/AutoradioBtn"
+                android:id="@+id/table3_autoRadioBtn"
                 android:checked="true"/>
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="手动"
                 android:textSize="22sp"
-                android:id="@+id/manualradioBtn" />
+                android:id="@+id/table3_manualRadioBtn" />
         </RadioGroup>
-
-
-
     </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_marginTop="0.5dp"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#aa000000" />
 
 
 </LinearLayout>

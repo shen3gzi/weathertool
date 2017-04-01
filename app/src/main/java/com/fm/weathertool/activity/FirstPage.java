@@ -48,7 +48,7 @@ public class FirstPage extends AppCompatActivity{
             //延迟引导页两秒跳入主界面
             public void run() {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                     Message msg = new Message();
                     mHandler.sendMessage(msg);
                 } catch (InterruptedException e) {
